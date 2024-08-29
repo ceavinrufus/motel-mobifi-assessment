@@ -1,93 +1,97 @@
 const mongoose = require("mongoose");
 
-const houseSchema = new mongoose.Schema({
+const houseSchema = new mongoose.Schema(
+  {
     author: {
-        type: String
+      type: String,
     },
     status: {
-        type: String,
-        default: "In progress"
+      type: String,
+      default: "In progress",
     },
     houseType: {
-        type: String,
+      type: String,
     },
     privacyType: {
-        type: String
+      type: String,
     },
     location: {
-        country: {
-            type: {}
-        },
-        addressLineOne: {
-            type: String
-        },
-        addressLineTwo: {
-            type: String
-        },
-        city: {
-            type: {}
-        },
-        state: {
-            type: {},
-        },
-        postCode: {
-            type: String
-        }
+      country: {
+        type: {},
+      },
+      addressLineOne: {
+        type: String,
+      },
+      addressLineTwo: {
+        type: String,
+      },
+      city: {
+        type: {},
+      },
+      state: {
+        type: {},
+      },
+      postCode: {
+        type: String,
+      },
     },
     floorPlan: {
-        guests: {
-            type: Number
-        },
-        bedrooms: {
-            type: Number
-        },
-        beds: {
-            type: Number
-        },
-        bathroomsNumber: {
-            type: Number
-        }
-
+      guests: {
+        type: Number,
+      },
+      bedrooms: {
+        type: Number,
+      },
+      beds: {
+        type: Number,
+      },
+      bathroomsNumber: {
+        type: Number,
+      },
     },
     amenities: {
-        type: Array
+      type: Array,
     },
     photos: {
-        type: Array
+      type: Array,
     },
     title: {
-        type: String
+      type: String,
     },
     highlight: {
-        type: Array
+      type: Array,
     },
     description: {
-        type: String
+      type: String,
     },
     visibility: {
-        type: String
+      type: String,
     },
     guestType: {
-        type: String
+      type: String,
     },
     priceAfterTaxes: {
-        type: Number
+      type: Number,
     },
     authorEarnedPrice: {
-        type: Number
+      type: Number,
     },
     basePrice: {
-        type: Number
+      type: Number,
+    },
+    walletAddress: {
+      type: String,
     },
     security: {
-        type: Array
+      type: Array,
     },
     ratings: {
-        type: Number,
-        default: null
-    }
-
-}, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
+      type: Number,
+      default: null,
+    },
+  },
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
+);
 
 const House = mongoose.model("House", houseSchema);
 

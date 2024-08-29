@@ -426,6 +426,44 @@ exports.savePrices = async (req, res) => {
   }
 };
 
+exports.saveWalletAddress = async (req, res) => {
+  try {
+    const payload = req.body;
+    const houseId = payload.houseId;
+    const walletAddress = payload.walletAddress;
+
+    console.log(payload);
+
+    const findCriteria = {
+      _id: new mongoose.Types.ObjectId(houseId),
+    };
+
+    const updateCriteria = {
+      walletAddress: walletAddress,
+    };
+
+    const houseDetails = await House.findOneAndUpdate(
+      findCriteria,
+      updateCriteria,
+      { new: true }
+    );
+    console.log(houseDetails, "from 378");
+
+    let response = {
+      status: 200,
+      succeed: 1,
+      info: "Successfully housedata updated",
+      houseDetails,
+    };
+
+    res.status(200).send(response);
+
+    // console.log(houseDetails, "line 386")
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.saveSecurity = async (req, res) => {
   try {
     const payload = req.body;

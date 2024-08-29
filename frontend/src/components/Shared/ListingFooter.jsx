@@ -14,6 +14,7 @@ import {
   saveLocation,
   savePhotos,
   savePrices,
+  saveWalletAddress,
   savePrivacyType,
   saveSecurity,
   saveStructure,
@@ -57,6 +58,7 @@ const ListingFooter = () => {
     `/become-a-host/${user?._id}/finish-step`,
     `/become-a-host/${user?._id}/visiblity`,
     `/become-a-host/${user?._id}/price`,
+    `/become-a-host/${user?._id}/wallet-address`,
     `/become-a-host/${user?._id}/legal`,
     `/become-a-host/${user?._id}/receipt`,
     `/become-a-host/${user?._id}/published`,
@@ -151,13 +153,20 @@ const ListingFooter = () => {
         // data save title to db
         await dispatch(savePrices(PriceData));
       } else if (currentStepIndex === 15) {
+        const walletData = {
+          walletAddress: createHouseData?.newHouse?.walletAddress,
+          houseId: currentListingHouseId,
+        };
+        // data save title to db
+        await dispatch(saveWalletAddress(walletData));
+      } else if (currentStepIndex === 16) {
         const securityData = {
           security: createHouseData?.newHouse?.security,
           houseId: currentListingHouseId,
         };
         // data save title to db
         await dispatch(saveSecurity(securityData));
-      } else if (currentStepIndex === 16) {
+      } else if (currentStepIndex === 17) {
         const publishList = {
           houseId: currentListingHouseId,
         };

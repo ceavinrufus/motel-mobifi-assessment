@@ -24,7 +24,12 @@ input[type="checkbox"] {
   padding: 0;
   accent-color: #222222;
 }
-
+input, textarea{
+  background-color: transparent;
+}
+.modal-box{
+  background-color: white!important;
+}
 /* Pop up css */
 .placeholder-shrink::placeholder {
   transform: translate(4px, 0) scale(0.9);

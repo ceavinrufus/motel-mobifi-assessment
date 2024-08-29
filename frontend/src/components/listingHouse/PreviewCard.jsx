@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
-
 import { AiFillStar } from "react-icons/ai";
+import photo from "../../assets/apartments1.png";
 
 const PreviewCard = () => {
   const currentHouseData = useSelector(
@@ -54,7 +54,7 @@ const PreviewCard = () => {
           <div className=" grid grid-cols-1 md:grid-cols-2 gap-10 overflow-y-auto py-7">
             <div>
               <img
-                src={currentHouseData?.photos[0]}
+                src={currentHouseData?.photos[0] || photo}
                 alt="Houses"
                 className=" max-w-md rounded-xl object-cover"
               />

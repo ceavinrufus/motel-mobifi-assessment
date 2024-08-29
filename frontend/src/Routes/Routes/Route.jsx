@@ -14,6 +14,7 @@ import ListHouseStepOne from "../../Pages/ListingHouseStepOne/ListHouseStepOne";
 import ListHouseStepOneStructure from "../../Pages/ListingHouseStepOne/ListHouseStepOneStructure";
 import ListHouseStepOnePlacetype from "../../Pages/ListingHouseStepOne/ListHouseStepOnePlacetype";
 import { FadeLoader } from "react-spinners";
+// import WalletAddress from "../../Pages/ListingHouseFinalStep/WalletAddress";
 // import ListingHouseStepOneAddress from "../../Pages/ListingHouseStepOne/ListingHouseStepOneAddress";
 // import ListingHouseStepOneFloorPlan from "../../Pages/ListingHouseStepOne/ListingHouseStepOneFloorPlan";
 // import StepTwoOverview from "../../Pages/ListingHouseStepTwo/StepTwoOverview";
@@ -58,6 +59,9 @@ const Thankyou = lazy(() =>
 const Receipt = lazy(() => import("../../Pages/ListingHouseFinalStep/Receipt"));
 const Legal = lazy(() => import("../../Pages/ListingHouseFinalStep/Legal"));
 const Pricing = lazy(() => import("../../Pages/ListingHouseFinalStep/Pricing"));
+const WalletAddress = lazy(() =>
+  import("../../Pages/ListingHouseFinalStep/WalletAddress")
+);
 const Visibility = lazy(() =>
   import("../../Pages/ListingHouseFinalStep/Visibility")
 );
@@ -331,6 +335,20 @@ const router = createBrowserRouter([
             }
           >
             <Pricing />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/become-a-host/:id/wallet-address",
+        element: (
+          <Suspense
+            fallback={
+              <div className=" flex justify-center items-center w-full h-[60dvh]">
+                <FadeLoader color="#000" />
+              </div>
+            }
+          >
+            <WalletAddress />
           </Suspense>
         ),
       },

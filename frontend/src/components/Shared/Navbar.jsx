@@ -132,7 +132,7 @@ const Navbar = () => {
                   onClick={() => {
                     isUserExist();
                   }}
-                  className=" flex flex-row justify-between items-center gap-2 bg-[#ff385c] hover:bg-[#d90b63] transition-all duration-300 px-3 py-2 rounded-lg"
+                  className=" flex flex-row justify-between items-center gap-2 bg-[#ff385c] hover:bg-[#d90b63] transition-all duration-300 px-3 py-2 rounded-lg cursor-pointer"
                 >
                   <img src={house} alt="House setup" className=" w-4 md:w-5" />
                   <p className=" font-semibold text-sm md:text-base text-white">
