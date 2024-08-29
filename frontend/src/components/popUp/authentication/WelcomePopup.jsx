@@ -173,17 +173,17 @@ const WelcomePopup = ({
 
       const data = { signedMessage, message, address };
 
-      const response = await axios.post(`${API}auth/metamask`, data, {
+      const response = await axios.post(`${API}auth/verify_signature`, data, {
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      let token = await response.data;
-
-      console.log(token);
+      const authenticated = await response.data?.authenticated;
+      return authenticated;
     } catch (error) {
       console.error(error);
+      return false;
     }
   };
 
@@ -194,8 +194,14 @@ const WelcomePopup = ({
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
-      setAccountAddress(accounts[0]);
-      handleCheckAddress(accounts[0]);
+
+      const nonce = await getNonce();
+      const authenticated = await signMessage(nonce);
+
+      if (authenticated) {
+        setAccountAddress(accounts[0]);
+        handleCheckAddress(accounts[0]);
+      }
     } catch (error) {
       console.log(error);
 

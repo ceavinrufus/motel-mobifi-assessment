@@ -144,18 +144,11 @@ exports.nonce = async (req, res) => {
   res.send({ nonce });
 };
 
-exports.metamask = async (req, res) => {
+exports.verifySignature = async (req, res) => {
   const { signedMessage, message, address } = req.body;
 
   const recoveredAddress = ethers.verifyMessage(message, signedMessage);
-  if (recoveredAddress != address) {
-    res.status(400).send("Signature verification failed");
-  }
-  const token = jwt.sign({ address }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: expirationTimeInSeconds,
-  });
-
-  res.send({ token });
+  res.send({ authenticated: recoveredAddress === address });
 };
 
 exports.postUser = async (req, res) => {

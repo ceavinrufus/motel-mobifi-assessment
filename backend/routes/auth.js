@@ -5,7 +5,7 @@ const {
   getUserByAddress,
   logIn,
   nonce,
-  metamask,
+  verifySignature,
   refreshToken,
   postUser,
   logOut,
@@ -24,7 +24,7 @@ router.use(express.json());
 router.post("/sign_up", signUp);
 router.post("/log_in", logIn);
 router.get("/nonce", nonce);
-router.post("/metamask", metamask);
+router.post("/verify_signature", verifySignature);
 router.post("/logout", verifyJwtToken, logOut);
 router.post("/get_user_details", verifyJwtToken, getUserDetails);
 router.post("/post", verifyJwtToken, postUser);
