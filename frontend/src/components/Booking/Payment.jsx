@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import errorIcon from "../../assets/basicIcon/errorIcon.png";
+import Select from "react-select";
 
 const Payment = ({ searchParamsObj }) => {
   const user = useSelector((state) => state.user.userDetails);
@@ -23,6 +24,7 @@ const Payment = ({ searchParamsObj }) => {
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
+  const [paymentMethod, setPaymentMethod] = useState({ name: "Credit card" });
   const [isProcessing, setIsProcessing] = useState(false);
   const [message, setMessage] = useState("");
   //   geting the checkin and checkout dates
@@ -104,10 +106,31 @@ const Payment = ({ searchParamsObj }) => {
         <hr className="w-full h-[1.3px] bg-[#dddddd] my-4" />
         {/* payment element */}
         <form onSubmit={handleSubmit}>
-          <h5 className="text-xl md:text-[22px] text-[#222222] font-medium pb-4">
-            Pay with
-          </h5>
-          <PaymentElement />
+          <div className="flex items-center pb-4 justify-between">
+            <h5 className="text-xl md:text-[22px] text-[#222222] font-medium">
+              Pay with
+            </h5>
+            <Select
+              options={["Credit card", "Cryptocurrency"].map((card) => ({
+                name: card,
+              }))}
+              getOptionLabel={(options) => options["name"]}
+              getOptionValue={(options) => options["name"]}
+              defaultValue={{ name: "Credit card" }}
+              // value={paymentMethod}
+              onChange={(item) => {
+                setPaymentMethod(item);
+              }}
+              placeholder="Payment method"
+              styles={{
+                control: (provided) => ({
+                  ...provided,
+                  borderRadius: "8px",
+                }),
+              }}
+            />
+          </div>
+          {paymentMethod.name === "Cryptocurrency" ? <></> : <PaymentElement />}
           <hr className="w-full h-[1.3px] bg-[#dddddd] my-10" />
           <div>
             <h5 className="text-xl md:text-[22px] text-[#222222] font-medium">
