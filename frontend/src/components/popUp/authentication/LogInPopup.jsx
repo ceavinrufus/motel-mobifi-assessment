@@ -84,7 +84,7 @@ const LogInPopup = ({
     } catch (error) {
       // // console.log(error);
       setIsLoading(false);
-      toast.warn("Network error try again!");
+      toast.error("Network error try again!");
     } finally {
       setIsLoading(false);
     }

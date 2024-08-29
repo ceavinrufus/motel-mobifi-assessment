@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const House = require("../models/house.model");
+const crypto = require("crypto");
+const { ethers } = require("ethers");
 
 const saltRounds = 10;
 const daysToSeconds = 1 * 60 * 60; //   days * hours *  minutes *  seconds
@@ -18,6 +20,9 @@ exports.signUp = async (req, res, next) => {
     if (!payload.emailId) {
       throw new Error("Please provide email id");
     }
+    if (!payload.addressId) {
+      throw new Error("Please provide address id");
+    }
     if (!payload.birthDate) {
       throw new Error("Please provide date of birth");
     }
@@ -30,6 +35,7 @@ exports.signUp = async (req, res, next) => {
         lastName: payload.name.lastName,
       },
       emailId: payload.emailId,
+      addressId: payload.addressId,
       birthDate: payload.birthDate,
       password: passwordHash,
     };
@@ -131,6 +137,25 @@ exports.logIn = async (req, res) => {
   } catch (error) {
     res.status(500).send();
   }
+};
+
+exports.nonce = async (req, res) => {
+  const nonce = crypto.randomBytes(32).toString("hex");
+  res.send({ nonce });
+};
+
+exports.metamask = async (req, res) => {
+  const { signedMessage, message, address } = req.body;
+
+  const recoveredAddress = ethers.verifyMessage(message, signedMessage);
+  if (recoveredAddress != address) {
+    res.status(400).send("Signature verification failed");
+  }
+  const token = jwt.sign({ address }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: expirationTimeInSeconds,
+  });
+
+  res.send({ token });
 };
 
 exports.postUser = async (req, res) => {
@@ -245,6 +270,36 @@ exports.checkEmail = async (req, res) => {
     } else {
       response = {
         info: "User email doesn't exist.",
+        success: 0,
+        status: 200,
+      };
+    }
+    res.status(200).send(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Failed to search");
+  }
+};
+
+exports.checkAddress = async (req, res) => {
+  try {
+    const payload = req.body;
+    console.log(payload);
+    const findCriteria = {
+      addressId: payload.address,
+    };
+    const isAddressExist = await User.find(findCriteria);
+    console.log(isAddressExist);
+    let response;
+    if (isAddressExist.length !== 0) {
+      response = {
+        info: "User address exist.",
+        success: 1,
+        status: 200,
+      };
+    } else {
+      response = {
+        info: "User address doesn't exist.",
         success: 0,
         status: 200,
       };

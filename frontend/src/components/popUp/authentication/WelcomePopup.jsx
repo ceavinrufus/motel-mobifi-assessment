@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { API } from "../../../backend";
 import { PulseLoader } from "react-spinners";
+import { ethers } from "ethers";
 // import google from "../../../assets/basicIcon/google.svg";
 import facebook from "../../../assets/basicIcon/facebook.svg";
 import metamask from "../../../assets/basicIcon/metamask.svg";
@@ -15,6 +16,7 @@ const WelcomePopup = ({
   setShowLoginPopup,
   setShowCreateUserPopup,
   setLoginEmail,
+  setAccountAddress,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
   const { handleSubmit, register, reset } = useForm();
@@ -50,6 +52,41 @@ const WelcomePopup = ({
       if (responseData?.success === 1) {
         setDefaultPopup(false);
         setShowLoginPopup(true);
+      }
+      if (responseData?.success === 0) {
+        setDefaultPopup(false);
+        setShowCreateUserPopup(true);
+      }
+      setTimeout(() => {
+        reset();
+      }, 300);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCheckAddress = async (address) => {
+    // setLoginEmail(email);
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${API}auth/check_address`,
+        {
+          address: address,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const responseData = response?.data;
+      if (responseData?.success === 1) {
+        setDefaultPopup(false);
+        // setShowLoginPopup(true);
       }
       if (responseData?.success === 0) {
         setDefaultPopup(false);
@@ -109,8 +146,59 @@ const WelcomePopup = ({
     })(document, "script", "facebook-jssdk");
   };
 
-  const handleConnectMetamask = () => {
+  const getNonce = async () => {
+    try {
+      const response = await axios.get(`${API}auth/nonce`);
+      const data = await response.data;
+      return data.nonce;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const signMessage = async (nonce) => {
+    try {
+      let provider;
+      let signer = null;
+
+      provider = new ethers.BrowserProvider(window.ethereum);
+      signer = await provider.getSigner();
+
+      const address = await signer.getAddress();
+      const message = `I am signing my one-time nonce: ${nonce}`;
+
+      const signedMessage = await signer.signMessage(message);
+
+      const data = { signedMessage, message, address };
+
+      const response = await axios.post(`${API}auth/metamask`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      let token = await response.data;
+
+      console.log(token);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleConnectMetamask = async () => {
     // Connect to Metamask
+    try {
+      if (!window.ethereum) return alert("Please install MetaMask.");
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      setAccountAddress(accounts[0]);
+      handleCheckAddress(accounts[0]);
+    } catch (error) {
+      console.log(error);
+
+      throw new Error("No ethereum object");
+    }
   };
 
   return (
@@ -120,7 +208,7 @@ const WelcomePopup = ({
         <h2 className="font-medium text-[22px] text-[#222222]">
           Welcome to Motel
         </h2>
-        <form onSubmit={handleSubmit(handleCheckEmail)}>
+        {/* <form onSubmit={handleSubmit(handleCheckEmail)}>
           <input
             type="email"
             placeholder="Email"
@@ -162,30 +250,11 @@ const WelcomePopup = ({
               "Continue"
             )}
           </button>
-        </form>
-      </div>
-      {/* devider */}
-      <div className="flex flex-row items-center px-8">
-        <div className="h-[1.2px] w-full inline-block bg-[#dddddd]"></div>
-        <p className="inline-block text-xs mx-2">or</p>
-        <div className="h-[1.2px] w-full inline-block bg-[#dddddd]"></div>
-      </div>
-      {/* continue with google/facebook */}
-      <div className=" flex flex-col gap-4 px-8 pb-7">
-        {/* Facebook */}
-        <div
-          className=" w-full flex flex-row items-center border border-[#222222] rounded-lg py-[10px] bg-[#ffffff] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
-          onClick={handleFacebookLogin}
-        >
-          <img src={facebook} alt="Log in with facebook" className="w-6 ml-5" />
-          <p className="text-sm mx-auto font-medium text-[#222222]">
-            Continue with Facebook
-          </p>
-        </div>
+        </form> */}
         {/* Metamask */}
         <div
-          className=" w-full flex flex-row items-center border border-[#222222] rounded-lg py-[10px] bg-[#ffffff] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
-          onClick={handleFacebookLogin}
+          className=" w-full flex flex-row items-center border border-[#222222] rounded-lg py-[10px] bg-[#ffffff] hover:bg-[#f7f7f7] transition-colors cursor-pointer mt-4"
+          onClick={handleConnectMetamask}
         >
           <img
             src={metamask}
@@ -196,6 +265,25 @@ const WelcomePopup = ({
             Connect with Metamask
           </p>
         </div>
+      </div>
+      {/* devider */}
+      {/* <div className="flex flex-row items-center px-8">
+        <div className="h-[1.2px] w-full inline-block bg-[#dddddd]"></div>
+        <p className="inline-block text-xs mx-2">or</p>
+        <div className="h-[1.2px] w-full inline-block bg-[#dddddd]"></div>
+      </div> */}
+      {/* continue with google/facebook */}
+      <div className=" flex flex-col gap-4 px-8 pb-7">
+        {/* Facebook */}
+        {/* <div
+          className=" w-full flex flex-row items-center border border-[#222222] rounded-lg py-[10px] bg-[#ffffff] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
+          onClick={handleFacebookLogin}
+        >
+          <img src={facebook} alt="Log in with facebook" className="w-6 ml-5" />
+          <p className="text-sm mx-auto font-medium text-[#222222]">
+            Continue with Facebook
+          </p>
+        </div> */}
       </div>
     </div>
   );

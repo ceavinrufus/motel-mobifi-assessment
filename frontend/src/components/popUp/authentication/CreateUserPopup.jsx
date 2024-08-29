@@ -12,6 +12,7 @@ import { userSignUp } from "../../../redux/actions/userActions";
 
 const CreateUserPopup = ({
   loginEmail,
+  accountAddress,
   setProfilePopup,
   showCreatePopUp,
   setPopup,
@@ -48,6 +49,7 @@ const CreateUserPopup = ({
         lastName: data.lastName,
       },
       emailId: data.email,
+      addressId: accountAddress,
       birthDate: data.birthDate,
       password: data.password,
     };

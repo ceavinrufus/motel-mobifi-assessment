@@ -14,6 +14,7 @@ const AuthenticationPopUp = ({ popup, setPopup }) => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [profilePopup, setProfilePopup] = useState(false);
   const [defaultPopup, setDefaultPopup] = useState(true);
+  const [accountAddress, setAccountAddress] = useState(null);
   const [loginEmail, setLoginEmail] = useState(null);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const popUpRef = useRef(null);
@@ -51,7 +52,7 @@ const AuthenticationPopUp = ({ popup, setPopup }) => {
                 ? " h-[60vh] popup__container__login"
                 : (showLoginPopup || profilePopup) && showErrorMessage
                 ? "h-[80vh]"
-                : "h-[80vh] popup__container"
+                : "h-fit popup__container"
             } w-[100%] sm:w-[70vw] md:w-[60vw] lg:w-[45vw] bg-[#ffffff] shadow-2xl rounded-xl overflow-hidden`}
           >
             {/* pop-up navbar */}
@@ -90,7 +91,7 @@ const AuthenticationPopUp = ({ popup, setPopup }) => {
             </div>
             <div
               className={`overflow-y-auto ${
-                showLoginPopup ? "h-[60vh]" : "h-[70vh]"
+                showLoginPopup ? "h-[60vh]" : "h-fit"
               }`}
             >
               {!defaultPopup ? null : (
@@ -99,6 +100,7 @@ const AuthenticationPopUp = ({ popup, setPopup }) => {
                   setShowLoginPopup={setShowLoginPopup}
                   setShowCreateUserPopup={setShowCreateUserPopup}
                   setLoginEmail={setLoginEmail}
+                  setAccountAddress={setAccountAddress}
                 />
               )}
               {!showLoginPopup ? null : (
@@ -116,6 +118,7 @@ const AuthenticationPopUp = ({ popup, setPopup }) => {
                 <CreateUserPopup
                   onBack={handleCloseLoginPopup}
                   loginEmail={loginEmail}
+                  accountAddress={accountAddress}
                   setProfilePopup={setProfilePopup}
                   showCreatePopUp={setShowCreateUserPopup}
                   setPopup={setPopup}
