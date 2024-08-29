@@ -72,7 +72,7 @@ const WelcomePopup = ({
     setIsLoading(true);
     try {
       const response = await axios.post(
-        `${API}auth/check_address`,
+        `${API}auth/get_user_by_address`,
         {
           address: address,
         },
@@ -85,10 +85,12 @@ const WelcomePopup = ({
 
       const responseData = response?.data;
       if (responseData?.success === 1) {
+        setLoginEmail(responseData?.data.emailId);
         setDefaultPopup(false);
-        // setShowLoginPopup(true);
+        setShowLoginPopup(true);
       }
       if (responseData?.success === 0) {
+        setLoginEmail("");
         setDefaultPopup(false);
         setShowCreateUserPopup(true);
       }

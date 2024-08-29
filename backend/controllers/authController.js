@@ -281,17 +281,17 @@ exports.checkEmail = async (req, res) => {
   }
 };
 
-exports.checkAddress = async (req, res) => {
+exports.getUserByAddress = async (req, res) => {
   try {
     const payload = req.body;
     console.log(payload);
     const findCriteria = {
       addressId: payload.address,
     };
-    const isAddressExist = await User.find(findCriteria);
-    console.log(isAddressExist);
+    const userData = await User.find(findCriteria);
+    console.log(userData);
     let response;
-    if (isAddressExist.length !== 0) {
+    if (userData.length !== 0) {
       response = {
         info: "User address exist.",
         success: 1,
@@ -304,7 +304,7 @@ exports.checkAddress = async (req, res) => {
         status: 200,
       };
     }
-    res.status(200).send(response);
+    res.status(200).send({ ...response, data: userData[0] });
   } catch (error) {
     console.log(error);
     res.status(500).send("Failed to search");

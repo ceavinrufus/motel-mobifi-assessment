@@ -2,7 +2,7 @@ const express = require("express");
 const {
   signUp,
   checkEmail,
-  checkAddress,
+  getUserByAddress,
   logIn,
   nonce,
   metamask,
@@ -33,7 +33,7 @@ router.post("/become_a_host", verifyJwtToken, userToHost);
 
 router.post("/refresh_token", refreshToken);
 router.post("/check_email", checkEmail);
-router.post("/check_address", checkAddress);
+router.post("/get_user_by_address", getUserByAddress);
 router.post("/profile_details", verifyJwtToken, userProfileDetails);
 router.post("/profile_details_about", verifyJwtToken, userProfileAbout);
 
