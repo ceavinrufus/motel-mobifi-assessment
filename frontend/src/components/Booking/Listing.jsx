@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useSelector } from "react-redux";
 import { AiFillStar } from "react-icons/ai";
+import photo from "../../assets/apartments1.png";
 
 const Listing = ({ searchParamsObj }) => {
   const listingData = useSelector(
@@ -34,7 +35,7 @@ const Listing = ({ searchParamsObj }) => {
         <div className=" flex flex-row gap-2">
           {/* listing img */}
           <img
-            src={listingData?.photos[0]}
+            src={listingData?.photos[0] || photo}
             alt="listing houses"
             className=" rounded-md object-cover w-[110px] h-[96px] sm:w-[124px] sm:h-[106px]"
           />

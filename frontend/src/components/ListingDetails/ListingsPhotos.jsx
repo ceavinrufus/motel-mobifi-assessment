@@ -1,5 +1,8 @@
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
+import photo1 from "../../assets/apartments1.png";
+import photo2 from "../../assets/apartments2.png";
+import photo3 from "../../assets/apartments3.png";
 
 /* eslint-disable react/prop-types */
 const ListingsPhotos = ({ listingData }) => {
@@ -29,7 +32,7 @@ const ListingsPhotos = ({ listingData }) => {
       <div className=" grid grid-cols-1 md:grid-cols-3 gap-2 max-h-[400px] min-h-[300px] overflow-y-hidden rounded-md md:rounded-2xl">
         <div className=" md:rounded-tl-2xl md:rounded-bl-2xl md:col-span-2">
           <img
-            src={listingData?.photos[0]}
+            src={listingData?.photos[0] || photo1}
             alt="Listing photos"
             className=" md:rounded-tl-2xl md:rounded-bl-2xl aspect-video object-cover w-full h-[240px] md:h-full"
           />
@@ -37,14 +40,14 @@ const ListingsPhotos = ({ listingData }) => {
         <div className="grid grid-cols-2 md:grid-cols-none md:grid-rows-2 gap-x-1 md:gap-x-0 gap-y-2 max-h-[400px] min-h-[300px] md:col-span-1">
           <div className=" overflow-y-hidden">
             <img
-              src={listingData?.photos[1]}
+              src={listingData?.photos[1] || photo2}
               alt="Listing photos"
               className=" md:rounded-tr-2xl aspect-video object-cover mb-2 w-full h-full"
             />
           </div>
           <div className=" overflow-y-hidden">
             <img
-              src={listingData?.photos[2]}
+              src={listingData?.photos[2] || photo3}
               alt="Listing photos"
               className=" md:rounded-br-2xl aspect-video object-cover w-full h-full"
             />

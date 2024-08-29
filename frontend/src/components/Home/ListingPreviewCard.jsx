@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { AiFillStar } from "react-icons/ai";
-
+import photo from "../../assets/apartments1.png";
 const ListingPreviewCard = ({ listingData, showBeforeTaxPrice }) => {
   const taxes = Math.round((listingData?.basePrice * 14) / 100);
   const priceAfterTaxes = listingData?.basePrice + taxes;
@@ -8,7 +8,7 @@ const ListingPreviewCard = ({ listingData, showBeforeTaxPrice }) => {
     <>
       <div className=" h-[310px] md:h-[277px] overflow-hidden rounded-xl">
         <img
-          src={listingData?.photos[0]}
+          src={listingData?.photos[0] || photo}
           alt="Listing images"
           className=" w-full h-[310px] md:h-[277px] object-cover object-center rounded-xl hover:scale-110 transition duration-500 ease-in-out cursor-pointer"
         />

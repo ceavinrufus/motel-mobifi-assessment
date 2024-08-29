@@ -6,8 +6,9 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { API } from "../../../backend";
 import { PulseLoader } from "react-spinners";
-// import google from "../../assets/basicIcon/google.svg";
+// import google from "../../../assets/basicIcon/google.svg";
 import facebook from "../../../assets/basicIcon/facebook.svg";
+import metamask from "../../../assets/basicIcon/metamask.svg";
 
 const WelcomePopup = ({
   setDefaultPopup,
@@ -108,6 +109,10 @@ const WelcomePopup = ({
     })(document, "script", "facebook-jssdk");
   };
 
+  const handleConnectMetamask = () => {
+    // Connect to Metamask
+  };
+
   return (
     <div className="flex flex-col gap-4">
       {/* welcome option */}
@@ -167,6 +172,7 @@ const WelcomePopup = ({
       </div>
       {/* continue with google/facebook */}
       <div className=" flex flex-col gap-4 px-8 pb-7">
+        {/* Facebook */}
         <div
           className=" w-full flex flex-row items-center border border-[#222222] rounded-lg py-[10px] bg-[#ffffff] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
           onClick={handleFacebookLogin}
@@ -174,6 +180,20 @@ const WelcomePopup = ({
           <img src={facebook} alt="Log in with facebook" className="w-6 ml-5" />
           <p className="text-sm mx-auto font-medium text-[#222222]">
             Continue with Facebook
+          </p>
+        </div>
+        {/* Metamask */}
+        <div
+          className=" w-full flex flex-row items-center border border-[#222222] rounded-lg py-[10px] bg-[#ffffff] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
+          onClick={handleFacebookLogin}
+        >
+          <img
+            src={metamask}
+            alt="Connect with Metamask"
+            className="w-6 ml-5"
+          />
+          <p className="text-sm mx-auto font-medium text-[#222222]">
+            Connect with Metamask
           </p>
         </div>
       </div>

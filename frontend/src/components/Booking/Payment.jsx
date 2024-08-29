@@ -10,6 +10,7 @@ import { PulseLoader } from "react-spinners";
 import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import errorIcon from "../../assets/basicIcon/errorIcon.png";
 
 const Payment = ({ searchParamsObj }) => {
   const user = useSelector((state) => state.user.userDetails);
@@ -142,6 +143,19 @@ const Payment = ({ searchParamsObj }) => {
               "Confirm and pay"
             )}
           </button>
+          {message && (
+            <div
+              role="alert"
+              className=" flex flex-row items-center gap-2 mt-1"
+            >
+              <img
+                src={errorIcon}
+                alt="Last name is requires"
+                className="w-5"
+              />
+              <p className="text-xs text-[#c13515]">{message}</p>
+            </div>
+          )}
         </form>
       </div>
     </div>
