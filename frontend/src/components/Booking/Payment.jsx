@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import errorIcon from "../../assets/basicIcon/errorIcon.png";
 import Select from "react-select";
 
-const Payment = ({ searchParamsObj }) => {
+const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
   const user = useSelector((state) => state.user.userDetails);
   const newReservationData = useSelector(
     (state) => state.reservations?.newReservationsData
@@ -24,7 +24,6 @@ const Payment = ({ searchParamsObj }) => {
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
-  const [paymentMethod, setPaymentMethod] = useState({ name: "Credit card" });
   const [isProcessing, setIsProcessing] = useState(false);
   const [message, setMessage] = useState("");
   //   geting the checkin and checkout dates
@@ -67,16 +66,20 @@ const Payment = ({ searchParamsObj }) => {
 
       setIsProcessing(true);
 
-      const { error } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/payment-confirmed?guestNumber=${guestNumber}&checkIn=${checkin}&checkOut=${checkout}&listingId=${listingData?._id}&authorId=${listingData?.author}&nightStaying=${nightStaying}&orderId=${orderId}`,
-        },
-      });
+      if (paymentMethod.name === "Cryptocurrency") {
+        toast.error("This payment method is not available yet!");
+      } else {
+        const { error } = await stripe.confirmPayment({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/payment-confirmed?guestNumber=${guestNumber}&checkIn=${checkin}&checkOut=${checkout}&listingId=${listingData?._id}&authorId=${listingData?.author}&nightStaying=${nightStaying}&orderId=${orderId}`,
+          },
+        });
 
-      if (error) {
-        setMessage(error.message);
-        toast.error("Payment failed. Try again!");
+        if (error) {
+          setMessage(error.message);
+          toast.error("Payment failed. Try again!");
+        }
       }
 
       setIsProcessing(false);

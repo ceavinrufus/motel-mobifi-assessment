@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { AiFillStar } from "react-icons/ai";
 import photo from "../../assets/apartments1.png";
 
-const Listing = ({ searchParamsObj }) => {
+const Listing = ({ searchParamsObj, paymentMethod }) => {
   const listingData = useSelector(
     (state) => state.house.listingDetails.listing
   );
@@ -27,6 +27,7 @@ const Listing = ({ searchParamsObj }) => {
   const totalPrice = basePrice + tax;
 
   // // console.log(listingData, "lis");
+  const multiplierDollarToETH = 0.00039;
 
   return (
     <div>
@@ -73,17 +74,33 @@ const Listing = ({ searchParamsObj }) => {
               <p>{nightStaying} nights</p>
             )}
             {/* calculating price */}
-            <p>${basePrice === 0 ? listingData?.basePrice : basePrice}</p>
+            {paymentMethod.name === "Cryptocurrency" ? (
+              <p>
+                {multiplierDollarToETH *
+                  (basePrice === 0 ? listingData?.basePrice : basePrice)}{" "}
+                ETH
+              </p>
+            ) : (
+              <p>${basePrice === 0 ? listingData?.basePrice : basePrice}</p>
+            )}
           </span>
           <span className=" flex flex-row justify-between text-base text-[#222]">
             <p>Taxes</p>
-            <p>${tax}</p>
+            {paymentMethod.name === "Cryptocurrency" ? (
+              <p>{multiplierDollarToETH * tax} ETH</p>
+            ) : (
+              <p>${tax}</p>
+            )}
           </span>
         </div>
         <hr className="w-full h-[1.3px] bg-[#dddddd] my-6" />
         <div className=" flex flex-row justify-between text-base text-[#222] font-medium">
           <p>Total(USD)</p>
-          <p>${totalPrice}</p>
+          {paymentMethod.name === "Cryptocurrency" ? (
+            <p>{multiplierDollarToETH * totalPrice} ETH</p>
+          ) : (
+            <p>${totalPrice}</p>
+          )}
         </div>
       </div>
     </div>

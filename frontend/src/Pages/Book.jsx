@@ -14,6 +14,7 @@ const Book = () => {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [paymentMethod, setPaymentMethod] = useState({ name: "Credit card" });
 
   const [searchParams] = useSearchParams();
 
@@ -87,11 +88,18 @@ const Book = () => {
           <section className=" grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 pt-10 px-8 md:px-10">
             {/* left side data => reservations data */}
             <div className="order-2 md:order-1">
-              <Payment searchParamsObj={searchParamsObj} />
+              <Payment
+                searchParamsObj={searchParamsObj}
+                paymentMethod={paymentMethod}
+                setPaymentMethod={setPaymentMethod}
+              />
             </div>
             {/* right side data => listing details */}
             <div className="order-1 md:order-2">
-              <Listing searchParamsObj={searchParamsObj} />
+              <Listing
+                searchParamsObj={searchParamsObj}
+                paymentMethod={paymentMethod}
+              />
             </div>
           </section>
         </Elements>
