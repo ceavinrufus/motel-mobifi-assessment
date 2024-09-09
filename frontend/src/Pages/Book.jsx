@@ -14,7 +14,9 @@ const Book = () => {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState({ name: "Credit card" });
+  const [paymentMethod, setPaymentMethod] = useState({
+    name: "Cryptocurrency",
+  });
 
   const [searchParams] = useSearchParams();
 

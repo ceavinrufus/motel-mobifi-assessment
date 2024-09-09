@@ -12,6 +12,7 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import errorIcon from "../../assets/basicIcon/errorIcon.png";
 import Select from "react-select";
+import { API } from "../../backend";
 
 const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
   const user = useSelector((state) => state.user.userDetails);
@@ -64,10 +65,45 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
         return;
       }
 
-      setIsProcessing(true);
+      // setIsProcessing(true);
 
       if (paymentMethod.name === "Cryptocurrency") {
-        toast.error("This payment method is not available yet!");
+        const basePrice =
+          parseInt(nightStaying) !== 0
+            ? parseInt(nightStaying) * listingData?.basePrice
+            : listingData?.basePrice;
+
+        const tax =
+          basePrice !== 0
+            ? Math.round((basePrice * 14) / 100)
+            : Math.round((listingData?.basePrice * 14) / 100);
+
+        const totalPrice = basePrice + tax;
+
+        console.log({
+          authorId: listingData?.author,
+          nightStaying,
+          totalPrice,
+        });
+        const { error } = await fetch(`${API}reservations/crypto_payment`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            authorId: listingData?.author,
+            nightStaying,
+            totalPrice,
+          }),
+        });
+        // const { error } = await axios.post(`${API}crypto_payment`, {
+        //   authorId: listingData?.author,
+        //   nightStaying,
+        //   totalPrice,
+        // });
+
+        if (error) {
+          setMessage(error.message);
+          toast.error("Payment failed. Try again!");
+        }
       } else {
         const { error } = await stripe.confirmPayment({
           elements,
@@ -119,7 +155,7 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
               }))}
               getOptionLabel={(options) => options["name"]}
               getOptionValue={(options) => options["name"]}
-              defaultValue={{ name: "Credit card" }}
+              defaultValue={{ name: "Cryptocurrency" }}
               // value={paymentMethod}
               onChange={(item) => {
                 setPaymentMethod(item);

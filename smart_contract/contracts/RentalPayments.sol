@@ -149,4 +149,15 @@ contract RentalPayments {
 
         emit PaymentReleased(bookingId, booking.owner, booking.amount);
     }
+
+    // Function to get all rental payments data
+    function getAllRentalPayments() external view returns (Booking[] memory) {
+        Booking[] memory allBookings = new Booking[](bookingCounter);
+
+        for (uint256 i = 1; i <= bookingCounter; i++) {
+            allBookings[i - 1] = bookings[i];
+        }
+
+        return allBookings;
+    }
 }

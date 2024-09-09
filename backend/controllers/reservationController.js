@@ -2,6 +2,8 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const House = require("../models/house.model");
 const reservationDB = require("../models/reservation.model");
+const { ethers, JsonRpcProvider } = require("ethers");
+const { abi } = require("../abi/RentalPayments.json");
 
 // stripe controller & payment process
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -36,17 +38,60 @@ exports.createPaymentIntent = async (req, res) => {
   }
 };
 
+exports.cryptoPayment = async (req, res) => {
+  try {
+    console.log("hit, crypto");
+    const payload = req.body;
+    const { authorId, nightStaying, totalPrice } = payload;
+
+    // Initialize ethers provider and signer
+    const provider = new JsonRpcProvider(process.env.ETH_PROVIDER_URL);
+    const signer = new ethers.Wallet(process.env.ETH_PRIVATE_KEY, provider);
+
+    // Smart contract ABI and address
+    const contractABI = abi;
+    const contractAddress = process.env.CONTRACT_ADDRESS;
+
+    // Instantiate the smart contract
+    const rentalPaymentsContract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer
+    );
+
+    // Convert the base price to wei (assuming basePrice is in ether)
+    const value = ethers.parseEther(totalPrice.toString());
+
+    // Call initiatePayment on the smart contract
+    const transaction = await rentalPaymentsContract.initiatePayment(
+      authorId,
+      nightStaying,
+      { value }
+    );
+
+    // Wait for the transaction to be mined
+    const receipt = await transaction.wait();
+
+    return receipt;
+  } catch (error) {
+    console.error("Error during crypto payment:", error);
+    throw error;
+  }
+};
+
 // save new reservation
 exports.newReservation = async (req, res) => {
   try {
     const payload = req.body;
-    const listingId = payload.listingId;
-    const authorId = payload.authorId;
-    const guestNumber = payload.guestNumber;
-    const checkIn = payload.checkIn;
-    const checkOut = payload.checkOut;
-    const nightStaying = payload.nightStaying;
-    const orderId = payload.orderId;
+    const {
+      listingId,
+      authorId,
+      guestNumber,
+      checkIn,
+      checkOut,
+      nightStaying,
+      orderId,
+    } = payload;
 
     const findCriteria = {
       _id: new mongoose.Types.ObjectId(listingId),
@@ -60,16 +105,16 @@ exports.newReservation = async (req, res) => {
       basePrice - Math.round((parseInt(basePrice) * 3) / 100);
 
     let newReservation = {
-      listingId: listingId,
-      authorId: authorId,
+      listingId,
+      authorId,
       guestNumber: parseInt(guestNumber),
-      checkIn: checkIn,
-      checkOut: checkOut,
+      checkIn,
+      checkOut,
       nightStaying: parseInt(nightStaying),
-      basePrice: basePrice,
+      basePrice,
       taxes: tax,
-      authorEarnedPrice: authorEarnedPrice,
-      orderId: orderId,
+      authorEarnedPrice,
+      orderId,
     };
 
     const findSavedListingReservation = await reservationDB.find({
@@ -90,8 +135,8 @@ exports.newReservation = async (req, res) => {
       res.status(404).send("Something went wrong try again later.");
     }
   } catch (error) {
-    console.log(error);
-    res.send(error);
+    console.error(error);
+    res.status(500).send("An error occurred.");
   }
 };
 
