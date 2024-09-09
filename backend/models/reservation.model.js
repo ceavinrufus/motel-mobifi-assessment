@@ -1,39 +1,44 @@
 const mongoose = require("mongoose");
 
-const reservationSchema = new mongoose.Schema({
+const reservationSchema = new mongoose.Schema(
+  {
     listingId: {
-        type: String
+      type: String,
     },
     authorId: {
-        type: String
+      type: String,
     },
     checkIn: {
-        type: String
+      type: String,
     },
     checkOut: {
-        type: String
+      type: String,
     },
     nightStaying: {
-        type: Number
+      type: Number,
     },
     guestNumber: {
-        type: Number
+      type: Number,
     },
     basePrice: {
-        type: Number
+      type: Number,
     },
     taxes: {
-        type: Number
+      type: Number,
     },
     authorEarnedPrice: {
-        type: Number
+      type: Number,
     },
     orderId: {
-        type: Number
-    }
-
-}, { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } })
+      type: Number,
+    },
+    transactionHash: {
+      type: String,
+    },
+  },
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
+);
 
 const reservationDB = mongoose.model("reservationDB", reservationSchema);
 
-module.exports = reservationDB
+module.exports = reservationDB;

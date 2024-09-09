@@ -85,23 +85,26 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
           nightStaying,
           totalPrice,
         });
-        const { error } = await fetch(`${API}reservations/crypto_payment`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            walletAddress: listingData?.walletAddress,
-            nightStaying,
-            totalPrice,
-          }),
-        });
-        // const { error } = await axios.post(`${API}crypto_payment`, {
-        //   authorId: listingData?.author,
-        //   nightStaying,
-        //   totalPrice,
-        // });
+        try {
+          const response = await fetch(`${API}reservations/crypto_payment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              walletAddress: listingData?.walletAddress,
+              nightStaying,
+              totalPrice,
+            }),
+          });
 
-        if (error) {
-          setMessage(error.message);
+          const receipt = await response.json();
+          toast.success("Payment successful!");
+
+          // Construct the redirect URL with necessary query parameters
+          const returnUrl = `${window.location.origin}/payment-confirmed?guestNumber=${guestNumber}&checkIn=${checkin}&checkOut=${checkout}&listingId=${listingData?._id}&authorId=${listingData?.author}&nightStaying=${nightStaying}&orderId=${orderId}&transactionHash=${receipt.transactionHash}`;
+
+          // Redirect to the return URL
+          window.location.href = returnUrl;
+        } catch (error) {
           toast.error("Payment failed. Try again!");
         }
       } else {

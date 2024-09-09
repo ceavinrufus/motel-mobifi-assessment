@@ -32,6 +32,7 @@ const PaymentConfirmed = () => {
     checkOut: searchParamsObj?.checkOut,
     nightStaying: searchParamsObj?.nightStaying,
     orderId: searchParamsObj?.orderId,
+    transactionHash: searchParamsObj?.transactionHash,
   };
 
   useEffect(() => {
@@ -40,13 +41,13 @@ const PaymentConfirmed = () => {
         const res = await api
           .post("/reservations/booking", reservationData)
           .catch(function (error) {
+            console.log(error, "from error");
             if (error.response.status === 404) {
               setPaymentFailed(true);
               setIsLoading(false);
               toast.error(error.response.data);
             }
           });
-        // // console.log(res, "response");
 
         if (res.status === 200) {
           setIsLoading(false);

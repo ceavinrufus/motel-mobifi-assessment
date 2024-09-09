@@ -91,6 +91,7 @@ exports.newReservation = async (req, res) => {
       checkOut,
       nightStaying,
       orderId,
+      transactionHash,
     } = payload;
 
     const findCriteria = {
@@ -115,6 +116,7 @@ exports.newReservation = async (req, res) => {
       taxes: tax,
       authorEarnedPrice,
       orderId,
+      transactionHash,
     };
 
     const findSavedListingReservation = await reservationDB.find({
@@ -129,7 +131,8 @@ exports.newReservation = async (req, res) => {
     console.log(listing, "line 80");
 
     if (!listing.includes(true)) {
-      const saveReservation = new reservationDB(newReservation).save();
+      const saveReservation = await reservationDB(newReservation).save();
+      console.log(saveReservation);
       res.status(200).send("Payment confirmed.");
     } else {
       res.status(404).send("Something went wrong try again later.");
