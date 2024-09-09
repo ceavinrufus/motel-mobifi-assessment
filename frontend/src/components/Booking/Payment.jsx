@@ -81,7 +81,7 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
         const totalPrice = basePrice + tax;
 
         console.log({
-          authorId: listingData?.author,
+          walletAddress: listingData?.walletAddress,
           nightStaying,
           totalPrice,
         });
@@ -89,7 +89,7 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            authorId: listingData?.author,
+            walletAddress: listingData?.walletAddress,
             nightStaying,
             totalPrice,
           }),

@@ -42,7 +42,7 @@ exports.cryptoPayment = async (req, res) => {
   try {
     console.log("hit, crypto");
     const payload = req.body;
-    const { authorId, nightStaying, totalPrice } = payload;
+    const { walletAddress, nightStaying, totalPrice } = payload;
 
     // Initialize ethers provider and signer
     const provider = new JsonRpcProvider(process.env.ETH_PROVIDER_URL);
@@ -64,7 +64,7 @@ exports.cryptoPayment = async (req, res) => {
 
     // Call initiatePayment on the smart contract
     const transaction = await rentalPaymentsContract.initiatePayment(
-      authorId,
+      walletAddress,
       nightStaying,
       { value }
     );
