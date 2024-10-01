@@ -12,7 +12,8 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import errorIcon from "../../assets/basicIcon/errorIcon.png";
 import Select from "react-select";
-import { API } from "../../backend";
+import { ethers } from "ethers"; // Import ethers.js
+import { abi } from "../../abi/RentalPayments.json";
 
 const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
   const user = useSelector((state) => state.user.userDetails);
@@ -27,15 +28,15 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [message, setMessage] = useState("");
-  //   geting the checkin and checkout dates
+
+  // Get check-in and check-out dates
   const dateObj = {
     checkin: searchParamsObj?.checkin,
     checkout: searchParamsObj?.checkout,
   };
 
-  //   dates
   const formattedDates = useDateFormatting(dateObj);
-  //   reservation data
+
   const guestNumber = newReservationData
     ? newReservationData.guestNumber
     : searchParamsObj?.numberOfGuests;
@@ -50,13 +51,69 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
     : searchParamsObj?.nightStaying;
   const orderId = Math.round(Math.random() * 10000000000);
 
-  // reservation form handler
+  // Crypto payment function
+  const handleCryptoPayment = async () => {
+    try {
+      // Check if Ethereum provider (MetaMask) is available
+      if (typeof window.ethereum === "undefined") {
+        toast.error(
+          "MetaMask not detected. Please install MetaMask or use a supported browser."
+        );
+        return;
+      }
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []); // Request wallet connection
+      const signer = await provider.getSigner();
+
+      const basePrice =
+        parseInt(nightStaying) !== 0
+          ? parseInt(nightStaying) * listingData?.basePrice
+          : listingData?.basePrice;
+
+      const tax = Math.round((basePrice * 14) / 100);
+      const totalPrice = basePrice + tax;
+
+      // Smart contract interaction
+      // Smart contract ABI and address
+      const contractABI = abi;
+      const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
+
+      const rentalPaymentsContract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer
+      );
+
+      const ethPrice = 0.00039 * totalPrice;
+      const amount = ethers.parseEther(ethPrice.toString());
+      console.log("Amount in wei:", amount);
+
+      const transaction = await rentalPaymentsContract.initiatePayment(
+        listingData?.walletAddress,
+        nightStaying,
+        {
+          value: amount, // Convert to gwei
+        }
+      );
+      // Wait for transaction to be mined
+      const receipt = await transaction.wait();
+      toast.success("Payment successful!");
+
+      // Redirect to confirmation page
+      const returnUrl = `${window.location.origin}/payment-confirmed?guestNumber=${guestNumber}&checkIn=${checkin}&checkOut=${checkout}&listingId=${listingData?._id}&authorId=${listingData?.author}&nightStaying=${nightStaying}&orderId=${orderId}&transactionHash=${receipt.transactionHash}`;
+      window.location.href = returnUrl;
+    } catch (error) {
+      toast.error("Payment failed. Please try again.");
+      console.error("Error during crypto payment:", error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!user) {
       toast.error("You need to log in first!");
-
       setTimeout(() => {
         navigate("/");
       }, 500);
@@ -65,48 +122,10 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
         return;
       }
 
-      // setIsProcessing(true);
+      setIsProcessing(true);
 
       if (paymentMethod.name === "Cryptocurrency") {
-        const basePrice =
-          parseInt(nightStaying) !== 0
-            ? parseInt(nightStaying) * listingData?.basePrice
-            : listingData?.basePrice;
-
-        const tax =
-          basePrice !== 0
-            ? Math.round((basePrice * 14) / 100)
-            : Math.round((listingData?.basePrice * 14) / 100);
-
-        const totalPrice = basePrice + tax;
-
-        console.log({
-          walletAddress: listingData?.walletAddress,
-          nightStaying,
-          totalPrice,
-        });
-        try {
-          const response = await fetch(`${API}reservations/crypto_payment`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              walletAddress: listingData?.walletAddress,
-              nightStaying,
-              totalPrice,
-            }),
-          });
-
-          const receipt = await response.json();
-          toast.success("Payment successful!");
-
-          // Construct the redirect URL with necessary query parameters
-          const returnUrl = `${window.location.origin}/payment-confirmed?guestNumber=${guestNumber}&checkIn=${checkin}&checkOut=${checkout}&listingId=${listingData?._id}&authorId=${listingData?.author}&nightStaying=${nightStaying}&orderId=${orderId}&transactionHash=${receipt.transactionHash}`;
-
-          // Redirect to the return URL
-          window.location.href = returnUrl;
-        } catch (error) {
-          toast.error("Payment failed. Try again!");
-        }
+        await handleCryptoPayment();
       } else {
         const { error } = await stripe.confirmPayment({
           elements,
@@ -124,15 +143,16 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
       setIsProcessing(false);
     }
   };
+
   return (
     <div>
       {/* trips section */}
-      <div className=" flex flex-col gap-6">
+      <div className="flex flex-col gap-6">
         <h5 className="text-xl md:text-[22px] text-[#222222] font-medium">
           Your trip
         </h5>
         {/* dates */}
-        <div className=" flex flex-row justify-between">
+        <div className="flex flex-row justify-between">
           <span className="text-sm md:text-base text-[#222222]">
             <p className="font-medium">Dates</p>
             <p>{formattedDates}</p>
@@ -159,7 +179,6 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
               getOptionLabel={(options) => options["name"]}
               getOptionValue={(options) => options["name"]}
               defaultValue={{ name: "Cryptocurrency" }}
-              // value={paymentMethod}
               onChange={(item) => {
                 setPaymentMethod(item);
               }}
@@ -213,11 +232,7 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
               role="alert"
               className=" flex flex-row items-center gap-2 mt-1"
             >
-              <img
-                src={errorIcon}
-                alt="Last name is requires"
-                className="w-5"
-              />
+              <img src={errorIcon} alt="Error icon" className="w-5" />
               <p className="text-xs text-[#c13515]">{message}</p>
             </div>
           )}
