@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 
 import { GrInProgress } from "react-icons/gr";
 import { AiFillCheckCircle } from "react-icons/ai";
+import photo from "../../../assets/apartments1.png";
 
 const ListingTable = () => {
   const allListingsData = useSelector((state) => state.house.housesData);
@@ -51,7 +52,7 @@ const ListingTable = () => {
                       {/* images & title */}
                       <td className=" px-6 py-4 flex flex-row items-center gap-2">
                         <img
-                          src={listing?.photos[0]}
+                          src={listing?.photos[0] || photo}
                           alt="Listing houses"
                           className=" aspect-[16/10] object-cover w-16 rounded"
                         />

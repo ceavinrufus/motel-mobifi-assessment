@@ -1,7 +1,7 @@
 const CancelledReservations = () => {
   return (
     <div>
-      <p>Calcelled Reservations</p>
+      <p>Cancelled Reservations</p>
     </div>
   );
 };
