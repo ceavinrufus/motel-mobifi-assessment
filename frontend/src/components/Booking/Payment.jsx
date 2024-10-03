@@ -87,13 +87,12 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
 
       const ethPrice = 0.00039 * totalPrice;
       const amount = ethers.parseEther(ethPrice.toString());
-      console.log("Amount in wei:", amount);
 
       const transaction = await rentalPaymentsContract.initiatePayment(
         listingData?.walletAddress,
         nightStaying,
         {
-          value: amount, // Convert to gwei
+          value: amount,
         }
       );
       // Wait for transaction to be mined
@@ -101,7 +100,7 @@ const Payment = ({ searchParamsObj, paymentMethod, setPaymentMethod }) => {
       toast.success("Payment successful!");
 
       // Redirect to confirmation page
-      const returnUrl = `${window.location.origin}/payment-confirmed?guestNumber=${guestNumber}&checkIn=${checkin}&checkOut=${checkout}&listingId=${listingData?._id}&authorId=${listingData?.author}&nightStaying=${nightStaying}&orderId=${orderId}&transactionHash=${receipt.transactionHash}`;
+      const returnUrl = `${window.location.origin}/payment-confirmed?guestNumber=${guestNumber}&checkIn=${checkin}&checkOut=${checkout}&listingId=${listingData?._id}&authorId=${listingData?.author}&nightStaying=${nightStaying}&orderId=${orderId}&transactionHash=${receipt.hash}`;
       window.location.href = returnUrl;
     } catch (error) {
       toast.error("Payment failed. Please try again.");
